@@ -1,19 +1,159 @@
 import * as core from '@actions/core'
-import {wait} from './wait'
+import {
+  logDebug,
+  logInfo,
+  timeout,
+  HardTimeoutError,
+  Runner,
+  VM
+} from 'anka-actions-common'
 
-async function run(): Promise<void> {
+type ActionParams = {
+  ghOwner: string
+  ghRepo: string
+  ghPAT: string
+
+  actionId: string
+
+  baseUrl: string
+
+  rootToken?: string
+
+  httpsAgentCa?: string
+  httpsAgentCert?: string
+  httpsAgentPassphrase?: string
+  httpsAgentSkipCertVerify?: boolean
+  httpsAgentKey?: string
+
+  pollDelay: number
+  hardTimeout: number
+
+  vcpu?: number
+  vram?: number
+  group_id?: string
+}
+;(async function main(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
-    core.debug(`Waiting ${ms} milliseconds ...`) // debug is only output if you set the secret `ACTIONS_STEP_DEBUG` to true
-
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
-
-    core.setOutput('time', new Date().toTimeString())
+    const params = await parseParams()
+    if (params.hardTimeout > 0) {
+      await Promise.race([
+        timeout(params.hardTimeout * 1000, 'hard-timeout exceeded'),
+        doAction(params)
+      ])
+    } else {
+      await doAction(params)
+    }
   } catch (error) {
-    if (error instanceof Error) core.setFailed(error.message)
+    let message
+    if (error instanceof Error) message = error.message
+    else message = String(error)
+
+    core.setFailed(message)
+
+    if (error instanceof HardTimeoutError) {
+      process.exit(1)
+    }
+  }
+})()
+
+async function doAction(params: ActionParams): Promise<void> {
+  const runner = new Runner(params.ghPAT, params.ghOwner, params.ghRepo)
+  const runnerId = await runner.getRunnerByActionId(params.actionId)
+  if (runnerId !== null) {
+    logInfo(
+      `[Action Runner] deleting runner with \u001b[40;1m id \u001b[33m${runnerId} \u001b[0m / \u001b[40;1m name \u001b[33m${params.actionId}`
+    )
+    await runner.delete(runnerId)
+  } else {
+    logInfo(`[Action Runner] not found, skipping...`)
+  }
+
+  const vm = new VM(
+    params.baseUrl,
+    params.rootToken,
+    params.httpsAgentCa,
+    params.httpsAgentCert,
+    params.httpsAgentKey,
+    params.httpsAgentPassphrase,
+    params.httpsAgentSkipCertVerify
+  )
+
+  const instanceId = await vm.getInstanceId(params.actionId)
+  if (instanceId !== null) {
+    logInfo(
+      `[VM] terminating instance with \u001b[40;1m id \u001b[33m${instanceId} \u001b[0m / \u001b[40;1m External ID \u001b[33m${params.actionId}`
+    )
+    await vm.terminate(instanceId)
+  } else {
+    logInfo(`[VM] not found, skipping...`)
   }
 }
 
-run()
+async function parseParams(): Promise<ActionParams> {
+  const pollDelay: number = parseInt(
+    core.getInput('poll-delay', {required: true}),
+    10
+  )
+  if (pollDelay <= 0) throw new Error('poll-delay must be positive integer')
+
+  const hardTimeout: number = parseInt(
+    core.getInput('hard-timeout', {required: true}),
+    10
+  )
+  if (hardTimeout < 0)
+    throw new Error('hard-timeout must be greater then or equal to 0')
+
+  const ghRepository = core.getInput('gh-repository', {required: true})
+  const parts = ghRepository.split('/')
+
+  if (parts.length !== 2) {
+    throw new Error(`failed to parse Github owner/repo: ${ghRepository}`)
+  }
+
+  const ghOwner = ghRepository.split('/')[0]
+  const ghRepo = ghRepository.split('/')[1]
+
+  const params: ActionParams = {
+    ghOwner,
+    ghRepo,
+    ghPAT: core.getInput('gh-pat', {required: true}),
+
+    actionId: core.getInput('action-id', {required: true}),
+    baseUrl: core.getInput('base-url', {required: true}),
+
+    rootToken: core.getInput('root-token'),
+
+    pollDelay,
+    hardTimeout
+  }
+
+  const httpsAgentCa = core.getInput('https-agent-ca')
+  if (httpsAgentCa) {
+    params.httpsAgentCa = httpsAgentCa
+  }
+
+  const httpsAgentCert = core.getInput('https-agent-cert')
+  if (httpsAgentCert) {
+    params.httpsAgentCert = httpsAgentCert
+  }
+
+  const httpsAgentKey = core.getInput('https-agent-key')
+  if (httpsAgentKey) {
+    params.httpsAgentKey = httpsAgentKey
+  }
+
+  const httpsAgentPassphrase = core.getInput('https-agent-cert-passphrase')
+  if (httpsAgentPassphrase) {
+    params.httpsAgentPassphrase = httpsAgentPassphrase
+  }
+
+  const httpsAgentSkipCertVerify = core.getBooleanInput(
+    'https-agent-skip-cert-verify'
+  )
+  if (httpsAgentSkipCertVerify) {
+    params.httpsAgentSkipCertVerify = httpsAgentSkipCertVerify
+  }
+
+  logDebug(`Parsed params: ${JSON.stringify(params)}`)
+  return params
+}

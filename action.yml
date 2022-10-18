@@ -1,11 +1,55 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'Anka up'
+description: 'Anka VM up action'
+author: 'Veertu Inc.'
 inputs:
-  milliseconds: # change this
+  # Github
+  gh-repository:
+    description: 'GitHub repository to create action runner'
+    required: false
+    default: ${{ github.repository }}
+  gh-pat:
+    description: 'GitHub personal access token (requires "repo" scope access)'
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+
+  # Connection
+  base-url:
+    description: 'Base url to the controller'
+    required: true
+  root-token:
+    description: 'Root Token for authentication in the Anka Controller'
+    required: false
+  https-agent-ca:
+    description: 'Root certificate (needed if cert is self-signed)'
+    required: false
+  https-agent-cert:
+    description: 'Certificate'
+    required: false
+  https-agent-cert-passphrase:
+    description: 'Certificate passphrase'
+    required: false
+  https-agent-key:
+    description: 'Private key'
+    required: false
+  https-agent-skip-cert-verify:
+    description: 'Whether to skip controllers certificate verification'
+    required: false
+    default: 'false'
+
+  # Timeouts
+  poll-delay:
+    description: 'Sleep delay (in seconds) between the HTTP requests to the Controller API'
+    required: false
+    default: '5'
+  hard-timeout:
+    description: 'Time interval (in seconds) after which job will be forced to stop (fails with an error)'
+    required: false
+    # 5 minutes
+    default: '300'
+
+  action-id:
+    description: 'runner id'
+    required: true
+
 runs:
   using: 'node16'
   main: 'dist/index.js'
