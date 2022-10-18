@@ -1,105 +1,97 @@
-<p align="center">
-  <a href="https://github.com/actions/typescript-action/actions"><img alt="typescript-action status" src="https://github.com/actions/typescript-action/workflows/build-test/badge.svg"></a>
-</p>
+# anka-actions-down
+# Use cases
+## Connecting to a controller
+There are only 3 required parameters:
+ - `gh-pat` stand for Github personal access token (requires `repo` scope in order to be able to create/remove self-hosted runners in the repository).
+ - `base-url` is a base URL to Anka controller
+ - `action-id` action id received as a result of `anka-actions-up`
 
-# Create a JavaScript Action using TypeScript
+The rest are optional!
 
-Use this template to bootstrap the creation of a TypeScript action.:rocket:
-
-This template includes compilation support, tests, a validation workflow, publishing, and versioning guidance.  
-
-If you are new, there's also a simpler introduction.  See the [Hello World JavaScript Action](https://github.com/actions/hello-world-javascript-action)
-
-## Create an action from this template
-
-Click the `Use this Template` and provide the new repo details for your action
-
-## Code in Main
-
-> First, you'll need to have a reasonably modern version of `node` handy. This won't work with versions older than 9, for instance.
-
-Install the dependencies  
-```bash
-$ npm install
-```
-
-Build the typescript and package it for distribution
-```bash
-$ npm run build && npm run package
-```
-
-Run the tests :heavy_check_mark:  
-```bash
-$ npm test
-
- PASS  ./index.test.js
-  ✓ throws invalid number (3ms)
-  ✓ wait 500 ms (504ms)
-  ✓ test runs (95ms)
-
-...
-```
-
-## Change action.yml
-
-The action.yml defines the inputs and output for your action.
-
-Update the action.yml with your name, description, inputs and outputs for your action.
-
-See the [documentation](https://help.github.com/en/articles/metadata-syntax-for-github-actions)
-
-## Change the Code
-
-Most toolkit and CI/CD operations involve async operations so the action is run in an async function.
-
-```javascript
-import * as core from '@actions/core';
-...
-
-async function run() {
-  try { 
-      ...
-  } 
-  catch (error) {
-    core.setFailed(error.message);
-  }
-}
-
-run()
-```
-
-See the [toolkit documentation](https://github.com/actions/toolkit/blob/master/README.md#packages) for the various packages.
-
-## Publish to a distribution branch
-
-Actions are run from GitHub repos so we will checkin the packed dist folder. 
-
-Then run [ncc](https://github.com/zeit/ncc) and push the results:
-```bash
-$ npm run package
-$ git add dist
-$ git commit -a -m "prod dependencies"
-$ git push origin releases/v1
-```
-
-Note: We recommend using the `--license` option for ncc, which will create a license file for all of the production node modules used in your project.
-
-Your action is now published! :rocket: 
-
-See the [versioning documentation](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
-
-## Validate
-
-You can now validate the action by referencing `./` in a workflow in your repo (see [test.yml](.github/workflows/test.yml))
-
+### Using unencrypted HTTP connection
 ```yaml
-uses: ./
-with:
-  milliseconds: 1000
+    steps:
+      - uses: veertuinc/anka-actions-up@v1
+        with:
+          gh-pat: ${{ secrets.REPO_SCOPE_PAT }}
+          base-url: 'http://192.168.1.1'
 ```
 
-See the [actions tab](https://github.com/actions/typescript-action/actions) for runs of this action! :rocket:
+### Using HTTPS connection
+#### Authenticating with trusted certificate
+```yaml
+    steps:
+      - uses: veertuinc/anka-actions-up@v1
+        with:
+          # ...
+          https-agent-cert: |
+            -----BEGIN CERTIFICATE-----
+            MIIETzCCAzegAwIBAgIUDQH+IYhuKajreldTnRo5Dh5hwzwwDQYJKoZIhvcNAQEL
+            # ...
+            IIf5XBR58a3PaS1aWN7krtPk1iUyPqo9VXG6GWInIcE/YJlYNeD5295IACzZ9Qmk
+            a3oX
+            -----END CERTIFICATE-----
+          https-agent-cert-passphrase: 'secret'
+          https-agent-key: |
+            -----BEGIN PRIVATE KEY-----
+            MIIJQQIBADANBgkqhkiG9w0BAQEFAASCCSswggknAgEAAoICAQCrPCrZt+BD4Ka8
+            # ...
+            jyRTcs5idHg8FzX6BAyWo9do+sDt
+            -----END PRIVATE KEY-----
+```
 
-## Usage:
+#### Authenticating with self-signed certificates
+This will also require specifying root certificate with `https-agent-ca:`
+```yaml
+    steps:
+      - uses: veertuinc/anka-actions-up
+        with:
+          # ...
+          https-agent-ca: |
+            -----BEGIN PRIVATE KEY-----
+            MIIJQQIBADANBgkqhkiG9w0BAQEFAASCCSswggknAgEAAoICAQCrPCrZt+BD4Ka8
+            # ...
+            jyRTcs5idHg8FzX6BAyWo9do+sDt
+                -----END PRIVATE KEY-----
+```
 
-After testing you can [create a v1 tag](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md) to reference the stable and latest V1 action
+#### Using self-signed certificates without authentication
+If you do not use HTTPS authentication you could simply add `https-agent-skip-cert-verify: true` instead:
+```yaml
+    steps:
+      - uses: veertuinc/anka-actions-up
+        with:
+          # ...
+          https-agent-skip-cert-verify: true
+```
+
+## Authenticating with a root token
+```yaml
+    steps:
+      - uses: veertuinc/anka-actions-up
+        with:
+          # ...
+          root-token: 'secret'
+```
+
+# Setting timeouts
+## Hard timeout
+Maximum time within which job has to finish successfully,
+otherwise it will be stopped and marked as failed. You can disable this behaviour by setting it to `0`
+```yaml
+    steps:
+      - uses: veertuinc/anka-actions-up
+        with:
+          # ... defaults to 5 minutes
+          hard-timeout: 300
+```
+
+## Poll delay
+This is a sleep interval between requests to your Anka controller REST API
+```yaml
+    steps:
+      - uses: veertuinc/anka-actions-up
+        with:
+          # ... defaults to 5 seconds
+          poll-delay: 5
+```
