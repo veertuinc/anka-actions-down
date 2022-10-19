@@ -1,11 +1,51 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'Anka up'
+description: 'Anka VM up action'
+author: 'Veertu Inc.'
 inputs:
-  milliseconds: # change this
+  gh-repo:
+    description: 'GitHub repository'
+    required: false
+    default: ${{ github.repository }}
+  gh-pat:
+    description: 'GitHub personal access token'
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+
+  base-url:
+    description: 'controller URL (including port, for example "https://192.168.1.1:443")'
+    required: true
+  root-token:
+    description: 'token for basic authentication'
+    required: false
+  https-agent-ca:
+    description: 'root CA certificate'
+    required: false
+  https-agent-cert:
+    description: 'controller certificate'
+    required: false
+  https-agent-cert-passphrase:
+    description: 'controller certificate password'
+    required: false
+  https-agent-key:
+    description: 'private key'
+    required: false
+  https-agent-skip-cert-verify:
+    description: 'skip certificate verification'
+    required: false
+    default: 'false'
+
+  poll-delay:
+    description: 'poll delay (seconds)'
+    required: false
+    default: '5'
+  hard-timeout:
+    description: 'time interval (in seconds) after which job will fail'
+    required: false
+    default: '60'
+
+  action-id:
+    description: 'runner id'
+    required: true
+
 runs:
   using: 'node16'
   main: 'dist/index.js'
