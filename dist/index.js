@@ -91,7 +91,7 @@ function doAction(params) {
         const octokit = new core_1.Octokit({ auth: params.ghPAT });
         const runnerId = yield getRunnerId(octokit, params.ghRepo, params.actionId);
         if (runnerId !== null) {
-            util.info(`[Action Runner] deleting runner with id \u001b[33m${runnerId}`);
+            util.info(`[Action Runner] deleting runner with \u001b[40;1m id \u001b[33m${runnerId} \u001b[0m / \u001b[40;1m name \u001b[33m${params.actionId}`);
             yield deleteRunner(octokit, params.ghRepo, runnerId);
         }
         else {
@@ -99,7 +99,7 @@ function doAction(params) {
         }
         const instanceId = yield getVMInstanceId(instance, params.actionId);
         if (instanceId !== null) {
-            util.info(`[VM] terminating instance with id \u001b[33m${instanceId}`);
+            util.info(`[VM] terminating instance with \u001b[40;1m id \u001b[33m${instanceId} \u001b[0m / \u001b[40;1m External ID \u001b[33m${params.actionId}`);
             yield terminateVMInstance(instance, instanceId);
         }
         else {
@@ -185,15 +185,6 @@ function parseParams() {
         return params;
     });
 }
-function deleteRunner(octokit, ghRepo, runnerId) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const tokenResp = yield octokit.request(`DELETE /repos/${ghRepo}/actions/runners/runners/{runner_id}`, {
-            runner_id: runnerId
-        });
-        util.debug(`GitHub action runner token: ${tokenResp.data.token}`);
-        return tokenResp.data.token;
-    });
-}
 function getVMInstanceId(ax, actionId) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -244,6 +235,13 @@ function createError(error) {
         throw new Error(`Controller request failed: ${error.cause}`);
     }
     throw error;
+}
+function deleteRunner(octokit, ghRepo, runnerId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield octokit.request(`DELETE /repos/${ghRepo}/actions/runners/{runner_id}`, {
+            runner_id: runnerId
+        });
+    });
 }
 function getRunnerId(octokit, ghRepo, actionId) {
     return __awaiter(this, void 0, void 0, function* () {

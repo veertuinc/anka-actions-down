@@ -33,7 +33,9 @@ async function doAction(params: api.ActionParams): Promise<void> {
   const octokit = new Octokit({auth: params.ghPAT})
   const runnerId = await getRunnerId(octokit, params.ghRepo, params.actionId)
   if (runnerId !== null) {
-    util.info(`[Action Runner] deleting runner with id \u001b[33m${runnerId}`)
+    util.info(
+      `[Action Runner] deleting runner with \u001b[40;1m id \u001b[33m${runnerId} \u001b[0m / \u001b[40;1m name \u001b[33m${params.actionId}`
+    )
     await deleteRunner(octokit, params.ghRepo, runnerId)
   } else {
     util.info(`[Action Runner] not found, skipping...`)
@@ -41,7 +43,9 @@ async function doAction(params: api.ActionParams): Promise<void> {
 
   const instanceId = await getVMInstanceId(instance, params.actionId)
   if (instanceId !== null) {
-    util.info(`[VM] terminating instance with id \u001b[33m${instanceId}`)
+    util.info(
+      `[VM] terminating instance with \u001b[40;1m id \u001b[33m${instanceId} \u001b[0m / \u001b[40;1m External ID \u001b[33m${params.actionId}`
+    )
     await terminateVMInstance(instance, instanceId)
   } else {
     util.info(`[VM] not found, skipping...`)
@@ -155,22 +159,6 @@ async function parseParams(): Promise<api.ActionParams> {
   return params
 }
 
-async function deleteRunner(
-  octokit: Octokit,
-  ghRepo: string,
-  runnerId: number
-): Promise<void> {
-  const tokenResp = await octokit.request(
-    `DELETE /repos/${ghRepo}/actions/runners/runners/{runner_id}`,
-    {
-      runner_id: runnerId
-    }
-  )
-  util.debug(`GitHub action runner token: ${tokenResp.data.token}`)
-
-  return tokenResp.data.token
-}
-
 async function getVMInstanceId(
   ax: axios.AxiosInstance,
   actionId: string
@@ -245,6 +233,16 @@ function createError(error: any): Error {
   }
 
   throw error
+}
+
+async function deleteRunner(
+  octokit: Octokit,
+  ghRepo: string,
+  runnerId: number
+): Promise<void> {
+  await octokit.request(`DELETE /repos/${ghRepo}/actions/runners/{runner_id}`, {
+    runner_id: runnerId
+  })
 }
 
 async function getRunnerId(
