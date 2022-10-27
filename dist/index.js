@@ -4286,7 +4286,7 @@ class VM {
             (0, log_1.logDebug)(`StartVMRequest body: ${reqBody}`);
             try {
                 const response = yield this.client.post('/api/v1/vm', reqBody);
-                (0, log_1.logDebug)(`StartVMResponse status: ${response.status}; body: ${response.data.body}`);
+                (0, log_1.logDebug)(`StartVMResponse ${JSON.stringify(response.data)}`);
                 if (response.data.status !== exports.API_STATUS_OK) {
                     throw new Error(`API response status:${response.data.status}`);
                 }
