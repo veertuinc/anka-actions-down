@@ -3,6 +3,10 @@ description: 'Anka VM up action'
 author: 'Veertu Inc.'
 inputs:
   # Github
+  gh-owner:
+    description: 'GitHub repository owner'
+    required: false
+    default: ${{ github.repository_owner }}
   gh-repository:
     description: 'GitHub repository to create action runner'
     required: false
