@@ -72,7 +72,7 @@ const anka_actions_common_1 = __nccwpck_require__(3347);
 function doAction(params) {
     return __awaiter(this, void 0, void 0, function* () {
         const runner = new anka_actions_common_1.Runner(new rest_1.Octokit({ auth: params.ghPAT }), params.ghOwner, params.ghRepo);
-        const runnerId = yield runner.getRunnerByActionId(params.actionId);
+        const runnerId = yield runner.getRunnerByName(params.actionId);
         if (runnerId !== null) {
             (0, anka_actions_common_1.logInfo)(`[Action Runner] deleting runner with \u001b[40;1m id \u001b[33m${runnerId} \u001b[0m / \u001b[40;1m name \u001b[33m${params.actionId}`);
             yield runner.delete(runnerId);
@@ -4469,13 +4469,13 @@ class Runner {
         this.owner = owner;
         this.repo = repo;
     }
-    getRunnerByActionId(actionId) {
+    getRunnerByName(name) {
         return __awaiter(this, void 0, void 0, function* () {
             const runnerListResp = yield this.octokit.actions.listSelfHostedRunnersForRepo({
                 owner: this.owner,
                 repo: this.repo
             });
-            const found = runnerListResp.data.runners.filter(runner => runner.name === actionId);
+            const found = runnerListResp.data.runners.filter(runner => runner.name === name);
             if (found.length) {
                 return found[0].id;
             }

@@ -63,7 +63,7 @@ async function doAction(params: ActionParams): Promise<void> {
     params.ghOwner,
     params.ghRepo
   )
-  const runnerId = await runner.getRunnerByActionId(params.actionId)
+  const runnerId = await runner.getRunnerByName(params.actionId)
   if (runnerId !== null) {
     logInfo(
       `[Action Runner] deleting runner with \u001b[40;1m id \u001b[33m${runnerId} \u001b[0m / \u001b[40;1m name \u001b[33m${params.actionId}`
