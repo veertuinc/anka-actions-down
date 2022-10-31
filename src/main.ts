@@ -1,4 +1,5 @@
 import * as core from '@actions/core'
+import {Octokit} from '@octokit/rest'
 import {
   logDebug,
   logInfo,
@@ -57,7 +58,11 @@ type ActionParams = {
 })()
 
 async function doAction(params: ActionParams): Promise<void> {
-  const runner = new Runner(params.ghPAT, params.ghOwner, params.ghRepo)
+  const runner = new Runner(
+    new Octokit({auth: params.ghPAT}),
+    params.ghOwner,
+    params.ghRepo
+  )
   const runnerId = await runner.getRunnerByActionId(params.actionId)
   if (runnerId !== null) {
     logInfo(
