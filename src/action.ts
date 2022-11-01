@@ -90,20 +90,21 @@ export async function parseParams(): Promise<ActionParams> {
     params.httpsAgentCa = httpsAgentCa
   }
 
-  const httpsAgentCert = core.getInput('https-agent-cert')
+  const httpsAgentCert = core.getInput('auth-cert')
   if (httpsAgentCert) {
     params.httpsAgentCert = httpsAgentCert
   }
 
-  const httpsAgentKey = core.getInput('https-agent-key')
+  const httpsAgentKey = core.getInput('auth-cert-key')
   if (httpsAgentKey) {
     params.httpsAgentKey = httpsAgentKey
   }
 
-  const httpsAgentPassphrase = core.getInput('https-agent-cert-passphrase')
+  const httpsAgentPassphrase = core.getInput('auth-cert-passphrase')
   if (httpsAgentPassphrase) {
     params.httpsAgentPassphrase = httpsAgentPassphrase
   }
+
 
   const httpsAgentSkipCertVerify = core.getBooleanInput(
     'https-agent-skip-cert-verify'
