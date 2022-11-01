@@ -46,9 +46,9 @@ test('parse all parameters', async () => {
     pollDelay: 1,
     hardTimeout: 2,
     httpsAgentCa: 'https-agent-ca',
-    httpsAgentCert: 'https-agent-cert',
-    httpsAgentKey: 'https-agent-key',
-    httpsAgentPassphrase: 'https-agent-cert-passphrase',
+    httpsAgentCert: 'auth-cert',
+    httpsAgentKey: 'auth-cert-key',
+    httpsAgentPassphrase: 'auth-cert-passphrase',
     httpsAgentSkipCertVerify: true
   })
 })
