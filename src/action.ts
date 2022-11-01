@@ -105,7 +105,6 @@ export async function parseParams(): Promise<ActionParams> {
     params.httpsAgentPassphrase = httpsAgentPassphrase
   }
 
-
   const httpsAgentSkipCertVerify = core.getBooleanInput(
     'https-agent-skip-cert-verify'
   )
