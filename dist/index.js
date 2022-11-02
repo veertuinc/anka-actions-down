@@ -68,9 +68,9 @@ function parseParams() {
         const pollDelay = parseInt(core.getInput('controller-http-poll-delay', { required: true }), 10);
         if (isNaN(pollDelay) || pollDelay <= 0)
             throw new Error('controller-http-poll-delay must be positive integer');
-        const hardTimeout = parseInt(core.getInput('hard-timeout', { required: true }), 10);
+        const hardTimeout = parseInt(core.getInput('job-ttl', { required: true }), 10);
         if (isNaN(hardTimeout) || hardTimeout < 0)
-            throw new Error('hard-timeout must be greater then or equal to 0');
+            throw new Error('job-ttl must be greater then or equal to 0');
         const ghOwner = core.getInput('gh-owner', { required: true });
         const params = {
             ghOwner,
@@ -163,7 +163,7 @@ const rest_1 = __nccwpck_require__(5375);
             const vm = new anka_actions_common_1.VM(params.baseUrl, params.rootToken, params.httpsAgentCa, params.httpsAgentCert, params.httpsAgentKey, params.httpsAgentPassphrase, params.httpsAgentSkipCertVerify);
             if (params.hardTimeout > 0) {
                 yield Promise.race([
-                    (0, anka_actions_common_1.timeout)(params.hardTimeout * 1000, 'hard-timeout exceeded'),
+                    (0, anka_actions_common_1.timeout)(params.hardTimeout * 1000, 'job-ttl exceeded'),
                     (0, action_1.doAction)(runner, vm, params)
                 ]);
             }

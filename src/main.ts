@@ -22,7 +22,7 @@ import {Octokit} from '@octokit/rest'
 
     if (params.hardTimeout > 0) {
       await Promise.race([
-        timeout(params.hardTimeout * 1000, 'hard-timeout exceeded'),
+        timeout(params.hardTimeout * 1000, 'job-ttl exceeded'),
         doAction(runner, vm, params)
       ])
     } else {

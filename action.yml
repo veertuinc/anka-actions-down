@@ -30,10 +30,10 @@ inputs:
     required: false
     default: 'false'
   controller-auth-cert:
-    description: "Certificate to use for communication with the Anka Build Cloud Controller's Cert Auth feature"
+    description: "Certificate to use for authorization with the Anka Build Cloud Controller"
     required: false
   controller-auth-cert-key:
-    description: "Private key to use for communication with the Anka Build Cloud Controller's Cert Auth feature"
+    description: "Private key to use for authorization with the Anka Build Cloud Controller"
     required: false
   controller-auth-cert-passphrase:
     description: "The Auth Certificate's passphrase"
@@ -44,8 +44,8 @@ inputs:
     description: "Delay (in seconds) between the HTTP requests to the Anka Build Cloud Controller's API"
     required: false
     default: '5'
-  hard-timeout:
-    description: 'TTL (in seconds) after which job will be forced to stop (fails with an error)'
+  job-ttl:
+    description: 'TTL (in seconds) after which job will be forced to stop (fails with an error) (disable with 0)'
     required: false
     # 5 minutes
     default: '300'
