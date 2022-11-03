@@ -1,6 +1,9 @@
 name: 'Anka Actions - Down'
 description: 'Spins down existing Anka VM Instance through your Anka Build Cloud Controller.'
 author: 'Veertu Inc.'
+branding:
+  icon: 'arrow-down'
+  color: 'purple'
 inputs:
   # Github
   gh-owner:
