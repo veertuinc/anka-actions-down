@@ -16,7 +16,7 @@ test('parse all parameters', async () => {
     switch (name) {
       default:
         return false
-      case 'https-agent-skip-cert-verify':
+      case 'controller-https-skip-cert-verify':
         return true
     }
   })
@@ -25,9 +25,9 @@ test('parse all parameters', async () => {
     switch (name) {
       default:
         return name
-      case 'poll-delay':
+      case 'controller-http-poll-delay':
         return '1'
-      case 'hard-timeout':
+      case 'job-ttl':
         return '2'
       case 'vcpu':
         return '3'
@@ -41,14 +41,14 @@ test('parse all parameters', async () => {
     ghOwner: 'gh-owner',
     ghRepo: 'gh-repository',
     ghPAT: 'gh-pat',
-    baseUrl: 'base-url',
-    rootToken: 'root-token',
+    baseUrl: 'controller-url',
+    rootToken: 'controller-root-token',
     pollDelay: 1,
     hardTimeout: 2,
-    httpsAgentCa: 'https-agent-ca',
-    httpsAgentCert: 'https-agent-cert',
-    httpsAgentKey: 'https-agent-key',
-    httpsAgentPassphrase: 'https-agent-cert-passphrase',
+    httpsAgentCa: 'controller-tls-ca',
+    httpsAgentCert: 'controller-auth-cert',
+    httpsAgentKey: 'controller-auth-cert-key',
+    httpsAgentPassphrase: 'controller-auth-cert-passphrase',
     httpsAgentSkipCertVerify: true
   })
 })
@@ -58,12 +58,12 @@ test('parse pollDelay throws', async () => {
     switch (name) {
       default:
         return name
-      case 'hard-timeout':
+      case 'job-ttl':
         return '2'
     }
   })
   expect(parseParams()).rejects.toThrowError(
-    'poll-delay must be positive integer'
+    'controller-http-poll-delay must be positive integer'
   )
 })
 
@@ -72,11 +72,11 @@ test('parse hardTimeout throws', async () => {
     switch (name) {
       default:
         return name
-      case 'poll-delay':
+      case 'controller-http-poll-delay':
         return '1'
     }
   })
   expect(parseParams()).rejects.toThrowError(
-    'hard-timeout must be greater then or equal to 0'
+    'job-ttl must be greater then or equal to 0'
   )
 })
