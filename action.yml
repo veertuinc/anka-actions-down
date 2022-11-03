@@ -1,4 +1,4 @@
-name: 'anka-actions-down'
+name: 'Anka Actions - Down'
 description: 'Spins down existing Anka VM Instance through your Anka Build Cloud Controller.'
 author: 'Veertu Inc.'
 inputs:
