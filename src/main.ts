@@ -6,7 +6,7 @@ import {Octokit} from '@octokit/rest'
   try {
     const params = await parseParams()
     const runner = new Runner(
-      new Octokit({auth: params.ghPAT}),
+      new Octokit({auth: params.ghPAT, baseUrl: params.ghBaseUrl}),
       params.ghOwner,
       params.ghRepo
     )

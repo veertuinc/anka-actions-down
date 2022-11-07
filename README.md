@@ -8,21 +8,22 @@ This action is mean to be used with [anka-actions-up](https://github.com/veertui
 
 ## Inputs
 
-| input name  | required? | description |
-|--------------|-------------|-----------|
-| `gh-pat` | **yes** | Github personal access token (requires `repo` scope in order to be able to create/remove self-hosted runners in the repository) |
-| `controller-url` | **yes** | The Anka Build Cloud Controller's URL to communicate with |
-| `action-id` | **yes** | The action id received in the output of `anka-actions-up` |
-| `gh-owner` | no | GitHub repository owner |
-| `gh-repository` | no | GitHub repository the github action runner will be attached to |
-| `controller-root-token` | no | Anka Build Cloud Controller's Root Token used for authentication |
-|`controller-tls-ca` | no | Anka Build Cloud Controller TLS certificate's CA (needed if controller TLS cert is self-signed) |
-|`controller-https-skip-cert-verify` | no | Skip the Anka Build Cloud Controller's TLS certificate verification |
-|`controller-auth-cert` | no | Certificate to use for authorization with the Anka Build Cloud Controller |
-|`controller-auth-cert-key` | no | Private key to use for authorization with the Anka Build Cloud Controller |
-|`controller-auth-cert-passphrase` | no | The Auth Certificate's passphrase |
-|`controller-http-poll-delay` | no | Delay (in seconds) between the HTTP requests to the Anka Build Cloud Controller's API |
-|`job-ttl` | no | TTL (in seconds) after which job will be forced to stop (fails with error) (disable with `0`) |
+| input name                          | required? | description                                                                                                                     |
+|-------------------------------------|-------------|---------------------------------------------------------------------------------------------------------------------------------|
+| `gh-pat`                            | **yes** | Github personal access token (requires `repo` scope in order to be able to create/remove self-hosted runners in the repository) |
+| `controller-url`                    | **yes** | The Anka Build Cloud Controller's URL to communicate with                                                                       |
+| `action-id`                         | **yes** | The action id received in the output of `anka-actions-up`                                                                       |
+| `gh-owner`                          | no | GitHub repository owner                                                                                                         |
+| `gh-repository`                     | no | GitHub repository the github action runner will be attached to                                                                  |
+| `gh-base-url`                       | no | GitHub Enterprise Server base url                                                                                               |
+| `controller-root-token`             | no | Anka Build Cloud Controller's Root Token used for authentication                                                                |
+| `controller-tls-ca`                 | no | Anka Build Cloud Controller TLS certificate's CA (needed if controller TLS cert is self-signed)                                 |
+| `controller-https-skip-cert-verify` | no | Skip the Anka Build Cloud Controller's TLS certificate verification                                                             |
+| `controller-auth-cert`              | no | Certificate to use for authorization with the Anka Build Cloud Controller                                                       |
+| `controller-auth-cert-key`          | no | Private key to use for authorization with the Anka Build Cloud Controller                                                       |
+| `controller-auth-cert-passphrase`   | no | The Auth Certificate's passphrase                                                                                               |
+| `controller-http-poll-delay`        | no | Delay (in seconds) between the HTTP requests to the Anka Build Cloud Controller's API                                           |
+| `job-ttl`                           | no | TTL (in seconds) after which job will be forced to stop (fails with error) (disable with `0`)                                   |
 
 ## Usage Examples
 
@@ -111,4 +112,18 @@ This is a interval between requests to your Anka Build Cloud Controller's REST A
         with:
           . . .
           controller-http-poll-delay: 5
+```
+
+### Using with Github Enterprise Server
+
+When using with GitHub Enterprise Server, set `gh-base-url` to the root URL of the API.
+For example, if your GitHub Enterprise Server's hostname is `github.acme-inc.com`,
+then set `gh-base-url` to `https://github.acme-inc.com/api/v3`
+
+```yaml
+    steps:
+      - uses: veertuinc/anka-actions-down@v1
+        with:
+          . . .
+          gh-base-url: 'https://github.acme-inc.com/api/v3'
 ```

@@ -4,6 +4,7 @@ import {logDebug, logInfo, Runner, VM} from 'anka-actions-common'
 type ActionParams = {
   ghOwner: string
   ghRepo: string
+  ghBaseUrl?: string
   ghPAT: string
 
   actionId: string
@@ -83,6 +84,11 @@ export async function parseParams(): Promise<ActionParams> {
 
     pollDelay,
     hardTimeout
+  }
+
+  const ghBaseUrl = core.getInput('gh-base-url')
+  if (ghBaseUrl) {
+    params.ghBaseUrl = ghBaseUrl
   }
 
   const httpsAgentCa = core.getInput('controller-tls-ca')

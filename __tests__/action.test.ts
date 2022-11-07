@@ -40,6 +40,7 @@ test('parse all parameters', async () => {
     actionId: 'action-id',
     ghOwner: 'gh-owner',
     ghRepo: 'gh-repository',
+    ghBaseUrl: 'gh-base-url',
     ghPAT: 'gh-pat',
     baseUrl: 'controller-url',
     rootToken: 'controller-root-token',
