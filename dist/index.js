@@ -73,6 +73,7 @@ function parseParams() {
             throw new Error('job-ttl must be greater then or equal to 0');
         const ghOwner = core.getInput('gh-owner', { required: true });
         const params = {
+            ghBaseUrl: core.getInput('gh-base-url'),
             ghOwner,
             ghRepo: core
                 .getInput('gh-repository', { required: true })
@@ -84,10 +85,8 @@ function parseParams() {
             pollDelay,
             hardTimeout
         };
-        const ghBaseUrl = core.getInput('gh-base-url');
-        if (ghBaseUrl) {
-            params.ghBaseUrl = ghBaseUrl;
-        }
+        if (params.ghBaseUrl.match('github.com') && !params.ghBaseUrl.match('/api/'))
+            throw new Error('gh-base-urls must include /api/v3');
         const httpsAgentCa = core.getInput('controller-tls-ca');
         if (httpsAgentCa) {
             params.httpsAgentCa = httpsAgentCa;
