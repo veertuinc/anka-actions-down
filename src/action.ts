@@ -87,7 +87,7 @@ export async function parseParams(): Promise<ActionParams> {
     hardTimeout
   }
 
-  if (params.ghBaseUrl.match('github.com') && !params.ghBaseUrl.match('/api/'))
+  if (!params.ghBaseUrl.match('github.com') && !params.ghBaseUrl.match('/api/'))
     throw new Error('gh-base-urls must include /api/v3')
 
   const httpsAgentCa = core.getInput('controller-tls-ca')
