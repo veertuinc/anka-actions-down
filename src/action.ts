@@ -4,7 +4,7 @@ import {logDebug, logInfo, Runner, VM} from 'anka-actions-common'
 type ActionParams = {
   ghOwner: string
   ghRepo: string
-  ghBaseUrl?: string
+  ghBaseUrl: string
   ghPAT: string
 
   actionId: string
@@ -71,6 +71,7 @@ export async function parseParams(): Promise<ActionParams> {
   const ghOwner = core.getInput('gh-owner', {required: true})
 
   const params: ActionParams = {
+    ghBaseUrl: core.getInput('gh-base-url'),
     ghOwner,
     ghRepo: core
       .getInput('gh-repository', {required: true})
@@ -86,10 +87,8 @@ export async function parseParams(): Promise<ActionParams> {
     hardTimeout
   }
 
-  const ghBaseUrl = core.getInput('gh-base-url')
-  if (ghBaseUrl) {
-    params.ghBaseUrl = ghBaseUrl
-  }
+  if (!params.ghBaseUrl.match('github.com') && !params.ghBaseUrl.match('/api/'))
+    throw new Error('gh-base-urls must include /api/v3')
 
   const httpsAgentCa = core.getInput('controller-tls-ca')
   if (httpsAgentCa) {

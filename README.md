@@ -15,7 +15,7 @@ This action is mean to be used with [anka-actions-up](https://github.com/veertui
 | `action-id`                         | **yes** | The action id received in the output of `anka-actions-up`                                                                       |
 | `gh-owner`                          | no | GitHub repository owner                                                                                                         |
 | `gh-repository`                     | no | GitHub repository the github action runner will be attached to                                                                  |
-| `gh-base-url`                       | no | GitHub Enterprise Server base url                                                                                               |
+| `gh-base-url`                       | no | GitHub Enterprise Server base url with /api/v3 on the end. At the moment only v3 is supported.                                                                           |
 | `controller-root-token`             | no | Anka Build Cloud Controller's Root Token used for authentication                                                                |
 | `controller-tls-ca`                 | no | Anka Build Cloud Controller TLS certificate's CA (needed if controller TLS cert is self-signed)                                 |
 | `controller-https-skip-cert-verify` | no | Skip the Anka Build Cloud Controller's TLS certificate verification                                                             |
