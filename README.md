@@ -1,3 +1,7 @@
+> [!IMPORTANT]
+> **This repo is no longer maintained.**
+> **Please use https://github.com/veertuinc/anka-actions instead.**
+
 # Anka Actions - Down
 
 This action is mean to be used with [anka-actions-up](https://github.com/veertuinc/anka-actions-up). Please be sure to start there.
